@@ -1,1 +1,92 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartBazar 360</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6f8;color:#222;font-family:Arial,sans-serif}
+header{background:#087b48;color:white;text-align:center;padding:22px 12px}
+header h1{margin:0}
+.lang{margin-top:14px;background:white;color:#087b48;padding:9px 16px;border:0;border-radius:8px;font-weight:bold}
+.search{padding:15px}
+input{width:100%;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+h2{color:#087b48;padding:0 14px}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
+.product{background:white;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 7px #ddd}
+.pic{font-size:45px;background:#eef8f1;padding:16px;border-radius:8px}
+.price{color:#087b48;font-weight:bold}
+button{border:0;border-radius:7px;padding:11px;background:#087b48;color:white;font-size:14px}
+.cart{background:white;margin:15px;padding:15px;border-radius:10px}
+.order{width:100%;background:#079b52;font-weight:bold}
+footer{text-align:center;padding:20px;color:#666}
+</style>
+</head>
+<body>
+<header>
+<h1>🛍️ SMARTBAZAR 360</h1>
+<p id="tagline">Your Choice, Our Market</p>
+<button class="lang" onclick="toggleLang()" id="langBtn">বাংলা</button>
+</header>
+<div class="search">
+<input id="search" placeholder="Search products..." oninput="showProducts()">
+</div>
+<h2 id="productTitle">Our Products</h2>
+<div class="products" id="products"></div>
+<div class="cart">
+<h2 id="cartTitle">Shopping Cart</h2>
+<div id="cart"></div>
+<h3 id="total">Total: ৳0</h3>
+<button class="order" onclick="orderNow()" id="orderBtn">Order via WhatsApp</button>
+<p id="payment">Payment: Cash on Delivery (COD)</p>
+</div>
+<footer id="footer">© 2026 SmartBazar 360. All rights reserved.</footer>
+<script>
+let bn=false;
+const items=[
+{name:"T-Shirt",bn:"টি-শার্ট",price:450,emoji:"👕"},
+{name:"Smart Watch",bn:"স্মার্ট ঘড়ি",price:1200,emoji:"⌚"},
+{name:"Headphones",bn:"হেডফোন",price:850,emoji:"🎧"},
+{name:"Backpack",bn:"ব্যাকপ্যাক",price:950,emoji:"🎒"},
+{name:"Shoes",bn:"জুতা",price:1400,emoji:"👟"},
+{name:"Sunglasses",bn:"সানগ্লাস",price:550,emoji:"🕶️"},
+{name:"Mobile Cover",bn:"মোবাইল কভার",price:250,emoji:"📱"},
+{name:"Water Bottle",bn:"পানির বোতল",price:300,emoji:"🧴"}
+];
+let basket=[];
+function nameOf(x){return bn?x.bn:x.name}
+function toggleLang(){
+bn=!bn;
+document.documentElement.lang=bn?"bn":"en";
+document.getElementById("langBtn").innerText=bn?"English":"বাংলা";
+document.getElementById("tagline").innerText=bn?"আপনার পছন্দ, আমাদের বাজার":"Your Choice, Our Market";
+document.getElementById("search").placeholder=bn?"পণ্য খুঁজুন...":"Search products...";
+document.getElementById("productTitle").innerText=bn?"আমাদের পণ্য":"Our Products";
+document.getElementById("cartTitle").innerText=bn?"আপনার কার্ট":"Shopping Cart";
+document.getElementById("orderBtn").innerText=bn?"WhatsApp-এ অর্ডার করুন":"Order via WhatsApp";
+document.getElementById("payment").innerText=bn?"পেমেন্ট: ক্যাশ অন ডেলিভারি":"Payment: Cash on Delivery (COD)";
+document.getElementById("footer").innerText=bn?"© 2026 SmartBazar 360. সর্বস্বত্ব সংরক্ষিত।":"© 2026 SmartBazar 360. All rights reserved.";
+showProducts();showCart();
+}
+function showProducts(){
+let q=document.getElementById("search").value.toLowerCase();
+document.getElementById("products").innerHTML=items.filter(x=>(x.name+" "+x.bn).toLowerCase().includes(q)).map(x=>'<div class="product"><div class="pic">'+x.emoji+'</div><h3>'+nameOf(x)+'</h3><p class="price">৳'+x.price+'</p><button onclick="addItem('+items.indexOf(x)+')">'+(bn?"কার্টে যোগ করুন":"Add to Cart")+'</button></div>').join("");
+}
+function addItem(i){basket.push(items[i]);showCart()}
+function showCart(){
+document.getElementById("cart").innerHTML=basket.length?basket.map((x,i)=>'<p>'+nameOf(x)+' — ৳'+x.price+' <button onclick="removeItem('+i+')">'+(bn?"বাদ দিন":"Remove")+'</button></p>').join(""):(bn?"আপনার কার্ট খালি":"Your cart is empty.");
+document.getElementById("total").innerText=(bn?"মোট: ৳":"Total: ৳")+basket.reduce((s,x)=>s+x.price,0);
+}
+function removeItem(i){basket.splice(i,1);showCart()}
+function orderNow(){
+if(!basket.length){alert(bn?"আগে কার্টে পণ্য যোগ করুন":"Please add a product to your cart first.");return}
+let lines=basket.map(x=>nameOf(x)+" ৳"+x.price).join("\n");
+let msg=(bn?"নতুন অর্ডার - SmartBazar 360\n":"New Order - SmartBazar 360\n")+lines+"\n"+(bn?"মোট: ৳":"Total: ৳")+basket.reduce((s,x)=>s+x.price,0);
+window.open("https://wa.me/8801728002430?text="+encodeURIComponent(msg),"_blank");
+}
+showProducts();showCart();
+</script>
+</body>
+</html>
